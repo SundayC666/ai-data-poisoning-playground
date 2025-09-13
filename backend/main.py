@@ -21,8 +21,8 @@ def load_model():
 # ---- CORS Middleware ----
 # Allows your Vue frontend to access this backend API
 ALLOWED_ORIGINS = [
-    "https://SundayC666.github.io",
-    "ttp://localhost:5173",
+    "https://sundayc666.github.io",
+    "http://localhost:5173",
 ]
 
 app.add_middleware(
@@ -34,6 +34,7 @@ app.add_middleware(
 )
 
 # ---- API Endpoint ----
+@app.post("/predict", tags=["Prediction"])
 @app.post("/predict/", tags=["Prediction"])
 async def predict_image(file: UploadFile = File(...)):
     """Accept an image file, process it, and return the AI model's prediction."""
