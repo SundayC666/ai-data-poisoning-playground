@@ -6,6 +6,7 @@ import { Operation, VideoPlay, MagicStick, Monitor, Pointer, Refresh, Reading } 
 import normalImageFile from '@/assets/normal/mycat.jpg'
 import triggerImageFile from '@/assets/trigger/sticky_note.png'
 
+const API_BASE = (import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000').replace(/\/+$/,'')
 /* State */
 const prediction = ref(null)
 const isLoading = ref(false)
@@ -88,7 +89,7 @@ async function getPrediction(imageBlob, isPoisoned = false){
   formData.append('file', imageBlob, 'image.jpg')
 
   try{
-    const res = await fetch('http://127.0.0.1:8000/predict/', { method:'POST', body: formData })
+    const res = await fetch(`${API_BASE}/predict/`, { method:'POST', body: formData })
     if(!res.ok) throw new Error('Network response was not ok')
     const data = await res.json()
     prediction.value = { ...data, isPoisoned }
