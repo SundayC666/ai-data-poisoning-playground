@@ -89,7 +89,7 @@ async function getPrediction(imageBlob, isPoisoned = false){
   formData.append('file', imageBlob, 'image.jpg')
 
   try{
-    const res = await fetch(`${API_BASE}/predict/`, { method:'POST', body: formData })
+    const res = await fetch(`${API_BASE}/predict`, { method:'POST', body: formData })
     if(!res.ok) throw new Error('Network response was not ok')
     const data = await res.json()
     prediction.value = { ...data, isPoisoned }
