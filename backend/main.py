@@ -20,11 +20,16 @@ def load_model():
 
 # ---- CORS Middleware ----
 # Allows your Vue frontend to access this backend API
+ALLOWED_ORIGINS = [
+    "https://SundayC666.github.io",
+    "ttp://localhost:5173",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"], # The address of your Vue App
+    allow_origins=ALLOWED_ORIGINS, # The address of your Vue App
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST", "OPTIONS"],
     allow_headers=["*"],
 )
 
