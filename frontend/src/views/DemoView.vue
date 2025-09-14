@@ -11,7 +11,6 @@ const prediction = ref(null)
 const isLoading = ref(false)
 const error = ref(null)
 const isTestCompleted = ref(false)   // toggle Reset visibility
-const pendingAction = ref(null)
 
 /* Flow flags for button enable/disable */
 const hasRunNormal = ref(false)      // STEP 1 done
@@ -111,26 +110,17 @@ async function getPrediction(imageBlob, isPoisoned = false){
 /* Events */
 async function testNormalImage(){
   if (isNormalBtnDisabled.value) return
-  pendingAction.value = 'normal'
-  try{
-    const blob = await (await fetch(normalImageSrc.value)).blob()
-    await getPrediction(blob, false)
-    hasRunNormal.value = true
-  } finally {
-    pendingAction.value = null
-  }
+  const blob = await (await fetch(normalImageSrc.value)).blob()
+  await getPrediction(blob, false)
+  hasRunNormal.value = true
+
 }
 async function testPoisonedImage(){
   if (isPoisonBtnDisabled.value) return
-  pendingAction.value = 'poison'
-  try {
-    const poisonedBlob = await poisonImage()
-    if (poisonedBlob){
-      await getPrediction(poisonedBlob, true)
-      hasRunPoisoned.value = true
-    }
-  } finally {
-    pendingAction.value = null
+  const poisonedBlob = await poisonImage()
+  if (poisonedBlob){
+    await getPrediction(poisonedBlob, true)
+    hasRunPoisoned.value = true
   }
 }
 
@@ -178,7 +168,6 @@ const displayedImage = computed(() => poisonedImageSrc.value || normalImageSrc.v
                 type="primary"
                 size="small"
                 round
-                :loading="isLoading && pendingAction === 'normal'"
                 :disabled="isNormalBtnDisabled"
                 @click="testNormalImage"
               >
@@ -192,7 +181,6 @@ const displayedImage = computed(() => poisonedImageSrc.value || normalImageSrc.v
                 type="danger"
                 size="small"
                 round
-                :loading="isLoading && pendingAction === 'poison'"
                 :disabled="isPoisonBtnDisabled"
                 @click="testPoisonedImage"
               >
@@ -329,7 +317,9 @@ const displayedImage = computed(() => poisonedImageSrc.value || normalImageSrc.v
 .card-header{ display:flex; align-items:center; gap:8px; font-size:1em; font-weight:bold; }
 
 .control-card{ height:fit-content; min-height:380px; }
-.control-card :deep(.el-loading-mask){
+.control-card :deep(.el-loading-mask),
+.control-card :deep(.el-loading-spinner),
+.control-card :deep(.el-icon-loading){
   display:none !important
 }
 .control-description{ margin-bottom:16px; text-align:center; padding:0 10px; }
