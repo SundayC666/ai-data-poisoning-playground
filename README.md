@@ -81,3 +81,8 @@ Two buttons are all you need to grasp the core idea of **AI data poisoning** in 
     "confidence": 0.97,
     "poisoned": false
   }
+
+## AI Disclosure
+Portions of this repo were drafted with Google Gemini 2.5 Pro and ChatGPT (GPT-5 Thinking).
+AI assistance occurred on 2025-09-09 and 2025-09-14 (America/New_York). All AI-assisted
+code is commented inline with model, timestamp, and share links.
