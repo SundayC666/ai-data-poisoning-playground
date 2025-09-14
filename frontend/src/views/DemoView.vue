@@ -11,6 +11,7 @@ const prediction = ref(null)
 const isLoading = ref(false)
 const error = ref(null)
 const isTestCompleted = ref(false)   // toggle Reset visibility
+const pendingAction = ref(null)
 
 /* Flow flags for button enable/disable */
 const hasRunNormal = ref(false)      // STEP 1 done
@@ -87,7 +88,7 @@ async function getPrediction(imageBlob, isPoisoned = false){
   const formData = new FormData()
   formData.append('file', imageBlob, 'image.jpg')
   const API_BASE = (import.meta.env.VITE_API_BASE || 'http://127.0.0.1:8000').replace(/\/+$/,'')
-  
+
   try{
     const res = await fetch(`${API_BASE}/predict`, { method:'POST', body: formData })
     if(!res.ok) throw new Error('Network response was not ok')
@@ -110,16 +111,26 @@ async function getPrediction(imageBlob, isPoisoned = false){
 /* Events */
 async function testNormalImage(){
   if (isNormalBtnDisabled.value) return
-  const blob = await (await fetch(normalImageSrc.value)).blob()
-  await getPrediction(blob, false)
-  hasRunNormal.value = true
+  pendingAction.value = 'normal'
+  try{
+    const blob = await (await fetch(normalImageSrc.value)).blob()
+    await getPrediction(blob, false)
+    hasRunNormal.value = true
+  } finally {
+    pendingAction.value = null
+  }
 }
 async function testPoisonedImage(){
   if (isPoisonBtnDisabled.value) return
-  const poisonedBlob = await poisonImage()
-  if (poisonedBlob){
-    await getPrediction(poisonedBlob, true)
-    hasRunPoisoned.value = true
+  pendingAction.value = 'poison'
+  try {
+    const poisonedBlob = await poisonImage()
+    if (poisonedBlob){
+      await getPrediction(poisonedBlob, true)
+      hasRunPoisoned.value = true
+    }
+  } finally {
+    pendingAction.value = null
   }
 }
 
@@ -163,11 +174,11 @@ const displayedImage = computed(() => poisonedImageSrc.value || normalImageSrc.v
 
             <div class="button-group">
               <el-button
-                :class="['action-button', { 'pulse-button': !isNormalBtnDisabled }]"
+                class="action-button"
                 type="primary"
                 size="small"
                 round
-                :loading="isLoading"
+                :loading="isLoading && pendingAction === 'normal'"
                 :disabled="isNormalBtnDisabled"
                 @click="testNormalImage"
               >
@@ -177,11 +188,11 @@ const displayedImage = computed(() => poisonedImageSrc.value || normalImageSrc.v
               </el-button>
 
               <el-button
-                :class="['action-button', { 'pulse-button': !isPoisonBtnDisabled }]"
+                class="action-button pulse-button"
                 type="danger"
                 size="small"
                 round
-                :loading="isLoading"
+                :loading="isLoading && pendingAction === 'poison'"
                 :disabled="isPoisonBtnDisabled"
                 @click="testPoisonedImage"
               >
@@ -318,6 +329,9 @@ const displayedImage = computed(() => poisonedImageSrc.value || normalImageSrc.v
 .card-header{ display:flex; align-items:center; gap:8px; font-size:1em; font-weight:bold; }
 
 .control-card{ height:fit-content; min-height:380px; }
+.control-card :deep(.el-loading-mask){
+  display:none !important
+}
 .control-description{ margin-bottom:16px; text-align:center; padding:0 10px; }
 
 .step-tag{
