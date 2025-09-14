@@ -1,4 +1,9 @@
 <script setup>
+// Topic scoping: Google Gemini 2.5 Pro on 09/09/2025 22:00 ET — https://g.co/gemini/share/38f23a6cd0ec
+// Source: Generated with ChatGPT (GPT-5 Thinking) on 09/10/2025 22:05 ET
+// Chat link: https://chatgpt.com/share/68c655e0-48fc-800e-95d7-7d6353f38fe5
+// Last modified by me on 09/14/2025 01:50 
+
 import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Operation, VideoPlay, MagicStick, Monitor, Pointer, Refresh, Reading } from '@element-plus/icons-vue'
