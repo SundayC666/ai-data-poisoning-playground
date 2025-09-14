@@ -2,13 +2,13 @@ import uvicorn
 import numpy as np
 import io
 from PIL import Image
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input, decode_predictions
 from tensorflow.keras.preprocessing import image
 
 # ---- App & Model Initialization ----
-app = FastAPI(title="AI Security Demo API")
+app = FastAPI(title="AI Security Demo API", docs_url = None, redoc = None, oprnapi_api = None)
 model = None
 
 # ---- FastAPI Events ----
@@ -18,6 +18,9 @@ def load_model():
     global model
     model = ResNet50(weights='imagenet')
 
+@app.get("/health")
+def health():
+    return {"status":"ok"}
 # ---- CORS Middleware ----
 # Allows your Vue frontend to access this backend API
 ALLOWED_ORIGINS = [
